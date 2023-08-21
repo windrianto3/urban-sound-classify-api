@@ -33,9 +33,9 @@ def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-@app.route('/upload')
+@app.route('/')
 def upload_file():
-   return render_template('./upload.html')
+   return render_template('./index.html')
 
 @app.route('/uploader', methods = ['GET','POST'])
 def upload_file_and_predict():
@@ -53,10 +53,10 @@ def upload_file_and_predict():
             return 'Bad request', 400
         
         if allowed_file(f.filename):
-            filepath = os.path.join(app.config['UPLOAD_FOLDER'], secure_filename(f.filename))
-            f.save(os.path.join(app.config['UPLOAD_FOLDER'], secure_filename(f.filename)))
+            #filepath = os.path.join(app.config['UPLOAD_FOLDER'], secure_filename(f.filename))
+            #f.save(os.path.join(app.config['UPLOAD_FOLDER'], secure_filename(f.filename)))
             print('file uploaded successfully')
-            return get_features_and_predict(filepath)
+            return get_features_and_predict(f)
         else:
             return 'Bad request', 400
 
@@ -66,9 +66,9 @@ def upload_file_and_predict():
    
    return 'Bad request', 400
 
-def get_features_and_predict(path):
+def get_features_and_predict(file):
     # Load uploaded mp3 
-    data, sample_rate = librosa.load(path, res_type='fft')
+    data, sample_rate = librosa.load(file, res_type='fft')
 
     # Feature extraction
     ft = librosa.feature.mfcc(y=data, sr=sample_rate, n_mfcc=128).T
